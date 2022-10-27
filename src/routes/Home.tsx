@@ -1,12 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 function Home() {
-  const [loggedIn, setLoggedIn] = useState(false);
-  return loggedIn ? (
-    <div>INDICATE ALREADY LOGGED IN</div>
-  ) : (
-    <div>SHOW LOGIN/REGISTRATION FORM</div>
-  );
+  return <div>LOGIN PAGE</div>
 }
 
 export default Home;
