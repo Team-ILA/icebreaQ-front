@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 function Home() {
-  const [loggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
   return loggedIn ? (
     <div>INDICATE ALREADY LOGGED IN</div>
   ) : (

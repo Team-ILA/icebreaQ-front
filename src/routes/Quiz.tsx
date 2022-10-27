@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 function Quiz() {
-  const quizid = useParams().quizid;
+  const { quizid } = useParams();
 
   useEffect(() => {
     // establish socket connection
