@@ -1,8 +1,0 @@
-{
-  "arrowParens": "always",
-  "tabWidth": 2,
-  "singleQuote": true,
-  "semi": true,
-  "importOrder": ["^@src/(.*)$", "^@ui/(.*)$", "^[./]"],
-  "importOrderSeparation": true
-}
