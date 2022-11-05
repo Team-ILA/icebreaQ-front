@@ -9,7 +9,7 @@ type DefaultButtonProps = {
 const DefaultButton = ({ className, content, onClick }: DefaultButtonProps) => {
   return (
     <button
-      className={`bg-violet-500 text-white font-light rounded-xl px-2 ${className}`}
+      className={`rounded-xl bg-violet-500 px-2 font-light text-white ${className}`}
       onClick={onClick}
     >
       {content}
