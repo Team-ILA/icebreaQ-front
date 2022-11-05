@@ -5,16 +5,16 @@ import { ReactComponent as NavBarLogo } from '../navbar_logo.svg';
 
 const NavBar = () => {
   return (
-    <nav className="border-b-2">
-      <div className="flex mx-52 my-3 items-center gap-3">
+    <nav className="sticky top-0 z-50 border-b-2 bg-white py-3 px-52">
+      <div className="flex items-center gap-3">
         <Link to="/">
           <NavBarLogo />
         </Link>
         <div className="grow" />
-        <button className="font-bold w-28 h-9 px-2 font-violet-500">
+        <button className="font-violet-500 h-9 w-28 px-2 font-bold">
           Login
         </button>
-        <button className="font-bold w-28 h-9 bg-white text-violet-900 border-2 rounded-lg px-2 font-violet-500">
+        <button className="font-violet-500 h-9 w-28 rounded-lg border-2 bg-white px-2 font-bold text-violet-900">
           Register
         </button>
       </div>
