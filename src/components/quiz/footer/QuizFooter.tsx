@@ -2,6 +2,7 @@ import React from 'react';
 import MicToggle from './MicToggle';
 import CamToggle from './CamToggle';
 import AnswerInput from './AnswerInput';
+import ExitButton from './ExitButton';
 
 const QuizFooter = () => {
   return (
@@ -9,6 +10,7 @@ const QuizFooter = () => {
       <MicToggle />
       <CamToggle />
       <AnswerInput />
+      <ExitButton />
     </div>
   );
 };
