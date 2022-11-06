@@ -5,7 +5,7 @@ import { ReactComponent as NavBarLogo } from '../navbar_logo.svg';
 
 const NavBar = () => {
   return (
-    <nav className="sticky top-0 z-50 border-b-2 bg-white py-2">
+    <nav className="fixed top-0 z-50 w-full border-b-2 bg-white py-2">
       <div className="mx-auto flex max-w-5xl items-center gap-3">
         <Link to="/">
           <NavBarLogo />

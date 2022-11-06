@@ -11,7 +11,9 @@ const MainLayout = ({ hideNavBar, children }: MainLayoutProps) => {
   return (
     <>
       {hideNavBar || <NavBar />}
-      <main>{children}</main>
+      <main>
+        <div className={hideNavBar ? '' : 'pt-[58px]'}>{children}</div>
+      </main>
     </>
   );
 };
