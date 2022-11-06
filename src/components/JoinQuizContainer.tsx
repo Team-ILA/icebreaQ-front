@@ -23,7 +23,10 @@ const JoinQuizContainer = () => {
           />
         </div>
         <Link to={`/quiz/${gamePin}`}>
-          <DefaultButton className="w-full p-2" content="Join" />
+          <DefaultButton
+            className="w-full p-2 transition duration-150 ease-in-out hover:bg-violet-600 hover:shadow-md focus:bg-violet-600 focus:shadow-md focus:outline-none focus:ring-0 active:bg-violet-700 active:shadow-md"
+            content="Join"
+          />
         </Link>
         <div className="text-center text-xl">
           <p>or</p>
