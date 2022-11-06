@@ -6,8 +6,10 @@ import MainLayout from '../layouts/MainLayout';
 function Landing() {
   return (
     <MainLayout>
-      <ServiceOverview />
-      <ServiceFeatures />
+      <div className="pt-[58px]">
+        <ServiceOverview />
+        <ServiceFeatures />
+      </div>
     </MainLayout>
   );
 }
