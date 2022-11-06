@@ -11,9 +11,11 @@ const NavBar = () => {
           <NavBarLogo />
         </Link>
         <div className="grow" />
-        <button className="font-violet-500 h-9 w-28 px-2 font-bold">
-          Login
-        </button>
+        <Link to="/login">
+          <button className="font-violet-500 h-9 w-28 px-2 font-bold">
+            Login
+          </button>
+        </Link>
         <button className="font-violet-500 h-9 w-28 rounded-lg border-2 bg-white px-2 font-bold text-violet-900">
           Register
         </button>
