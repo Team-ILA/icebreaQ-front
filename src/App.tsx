@@ -6,6 +6,7 @@ import Landing from './routes/Landing';
 import Login from './routes/Login';
 import Makequiz from './routes/MakeQuiz';
 import Quiz from './routes/Quiz';
+import JoinQuiz from './routes/JoinQuiz';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Route element={<Login />} index path="/login" />
       <Route element={<Makequiz />} path="/makequiz" />
       <Route element={<Quiz />} path="/quiz/:quizId" />
+      <Route element={<JoinQuiz />} path="/join" />
     </Routes>
   );
 }
