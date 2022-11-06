@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import MainLayout from '../layouts/MainLayout';
+import QuizContainer from '../components/quiz/QuizContainer';
 
 function Quiz() {
   const { quizId } = useParams();
-
   useEffect(() => {
-    // establish socket connection
-
-    // set state using params i.e. axios.get(`url/quiz/{quizid}`)
     console.log(quizId);
   }, []);
 
-  return <div></div>;
+  return (
+    <MainLayout hideNavBar>
+      <QuizContainer />
+    </MainLayout>
+  );
 }
 
 export default Quiz;
