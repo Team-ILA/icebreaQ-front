@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useList } from 'react-use';
 import { HiOutlinePlusCircle } from 'react-icons/hi';
 import SelectMenus, { SelectMenuItemProps } from './SelectMenus';
-import QuestionCard from './QuestionCard';
+import QuestionCard, { Question } from './QuestionCard';
 import DefaultButton from './DefaultButton';
 
 const personnelOptions: SelectMenuItemProps[] = [
@@ -11,13 +12,17 @@ const personnelOptions: SelectMenuItemProps[] = [
   { id: 5, content: '10 people' },
 ];
 
+const initialQuestion: Question = {
+  questionContent: '',
+};
+
 const MakeQuizContainer = () => {
-  const [questions, setQuestions] = useState([1]);
+  const [questions, { push, updateAt, removeAt }] = useList<Question>([
+    initialQuestion,
+  ]);
 
   const addQuestionHandler = () => {
-    setQuestions((prev) => {
-      return [...prev, prev.length + 1];
-    });
+    push(initialQuestion);
   };
 
   return (
@@ -37,8 +42,16 @@ const MakeQuizContainer = () => {
           <SelectMenus items={personnelOptions} />
         </div>
       </div>
-      {questions.map((questionNum) => {
-        return <QuestionCard questionNum={questionNum} key={questionNum} />;
+      {questions.map((question, index) => {
+        return (
+          <QuestionCard
+            question={question}
+            index={index}
+            key={index}
+            updateAt={updateAt}
+            removeAt={removeAt}
+          />
+        );
       })}
       <div
         className="flex w-full items-center justify-center gap-1 border-2 border-dashed bg-white p-3 text-gray-600 hover:cursor-pointer hover:font-bold"
