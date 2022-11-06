@@ -1,7 +1,15 @@
 import React from 'react';
+import MainLayout from '../layouts/MainLayout';
+import MakeQuizContainer from '../components/MakeQuizContainer';
 
-function MakeQuiz() {
-  return <div>PAGE FOR MAKING NEW QUIZ</div>;
-}
+const MakeQuiz = () => {
+  return (
+    <MainLayout>
+      <div className="pt-[58px]">
+        <MakeQuizContainer />
+      </div>
+    </MainLayout>
+  );
+};
 
 export default MakeQuiz;
