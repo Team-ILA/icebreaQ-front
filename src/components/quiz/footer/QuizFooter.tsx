@@ -1,0 +1,12 @@
+import React from 'react';
+import MicToggle from './MicToggle';
+
+const QuizFooter = () => {
+  return (
+    <div className="fixed bottom-0 flex h-20 w-full items-center bg-gray-800 px-10 py-5">
+      <MicToggle />
+    </div>
+  );
+};
+
+export default QuizFooter;
