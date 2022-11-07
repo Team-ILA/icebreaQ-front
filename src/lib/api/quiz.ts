@@ -5,7 +5,7 @@ export const requestMakeQuiz = (
   limit: number,
   questions: string[]
 ) =>
-  apiClient.post<makeQuizReponse>('/api/quiz', {
+  apiClient.post<makeQuizReponse>('/quiz', {
     title: title,
     limit: limit,
     questions: questions,
@@ -15,7 +15,7 @@ export type makeQuizReponse = {
 };
 
 export const getQuizInfo = (quizId: string) =>
-  apiClient.get<quizReponse>(`/api/quiz/${quizId}`);
+  apiClient.get<quizReponse>(`/quiz/${quizId}`);
 
 export type quizReponse = {
   quizId: string;
