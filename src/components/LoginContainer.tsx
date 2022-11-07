@@ -4,7 +4,7 @@ import useAuth from '../hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const LoginContainer = () => {
-  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
   const [invalid, setInvalid] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,22 +14,17 @@ const LoginContainer = () => {
 
   const loginHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setEmail('');
-    setPassword('');
-    emailRef.current?.focus();
+    passwordRef.current?.focus();
     basicLogin(email, password)
       .then(({ data }) => {
-        setAuth({
-          email: data.email,
-          username: data.username,
-        });
-        if (state) {
-          navigate(state);
-        } else {
-          navigate('/');
-        }
+        const { email, username } = data;
+        setAuth({ email, username });
+        navigate(state || '/');
       })
-      .catch(() => setInvalid(true));
+      .catch(() => {
+        setInvalid(true);
+        setPassword('');
+      });
   };
 
   const emailChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +45,6 @@ const LoginContainer = () => {
             id="email"
             value={email}
             onChange={emailChangeHandler}
-            ref={emailRef}
             placeholder="Email address"
           />
         </div>
@@ -61,6 +55,7 @@ const LoginContainer = () => {
             id="password"
             value={password}
             onChange={passWordChangeHandler}
+            ref={passwordRef}
             placeholder="Password"
           />
         </div>
