@@ -9,3 +9,5 @@ export type loginResponse = {
   email: string;
   username: string;
 };
+
+export const requestLogOut = () => apiClient.post('/api/user/logout');
