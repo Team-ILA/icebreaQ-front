@@ -1,37 +1,49 @@
-import React, {
-  createContext,
-  useMemo,
-  useState,
-  Dispatch,
-  SetStateAction,
-} from 'react';
+import React, { createContext, useMemo, useState } from 'react';
 
-type AuthType = {
+type AuthValueType = {
   email: string;
   username: string;
 };
 
-type AuthContextType = [AuthType, Dispatch<SetStateAction<AuthType>>];
-
-type AuthProviderProps = {
-  children: React.ReactNode;
+type AuthActionType = {
+  signIn: (user: AuthValueType) => void;
+  signOut: () => void;
 };
 
-const initalValue: AuthType = {
+export const AuthValueContext = createContext<AuthValueType>(
+  {} as AuthValueType
+);
+
+export const AuthActionContext = createContext<AuthActionType>(
+  {} as AuthActionType
+);
+
+const initalValue: AuthValueType = {
   email: '',
   username: '',
 };
 
-export const AuthContext = createContext<AuthContextType>(
-  {} as AuthContextType
-);
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [auth, setAuth] = useState<AuthValueType>(initalValue);
+  const actions = useMemo(
+    () => ({
+      signIn(user: AuthValueType) {
+        setAuth(user);
+      },
+      signOut() {
+        setAuth(initalValue);
+      },
+    }),
+    []
+  );
 
-const AuthProvider = ({ children }: AuthProviderProps) => {
-  const authState = useState<AuthType>(initalValue);
-
-  const value = useMemo(() => authState, [authState]);
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthActionContext.Provider value={actions}>
+      <AuthValueContext.Provider value={auth}>
+        {children}
+      </AuthValueContext.Provider>
+    </AuthActionContext.Provider>
+  );
 };
 
 export default AuthProvider;

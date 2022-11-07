@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { basicLogin } from '../lib/api/auth';
-import useAuth from '../hooks/useAuth';
+import useAuthAction from '../hooks/useAuthAction';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const LoginContainer = () => {
@@ -8,7 +8,7 @@ const LoginContainer = () => {
   const [invalid, setInvalid] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [, setAuth] = useAuth();
+  const { signIn } = useAuthAction();
   const navigate = useNavigate();
   const { state } = useLocation();
 
@@ -18,7 +18,7 @@ const LoginContainer = () => {
     basicLogin(email, password)
       .then(({ data }) => {
         const { email, username } = data;
-        setAuth({ email, username });
+        signIn({ email, username });
         navigate(state || '/');
       })
       .catch(() => {
