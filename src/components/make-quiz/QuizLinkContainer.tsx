@@ -6,7 +6,7 @@ import CopyToClipBoard from './CopyToClipBoard';
 const QuizLinkContainer = () => {
   const [searchParams] = useSearchParams();
   const quizId = searchParams.get('quizId');
-  const link = `${process.env.REACT_APP_HOST}/quiz/${quizId}`;
+  const link = `${process.env.REACT_APP_URL}/quiz/${quizId}`;
 
   if (!quizId) {
     return <Navigate to="/" replace />;
