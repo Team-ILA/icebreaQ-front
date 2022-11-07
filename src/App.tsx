@@ -8,16 +8,20 @@ import Makequiz from './routes/MakeQuiz';
 import Quiz from './routes/Quiz';
 import JoinQuiz from './routes/JoinQuiz';
 
+import AuthProvider from './context/AuthProvider';
+
 function App() {
   return (
-    <Routes>
-      <Route element={<Landing />} index path="/" />
-      <Route element={<Home />} index path="/home" />
-      <Route element={<Login />} index path="/login" />
-      <Route element={<Makequiz />} path="/makequiz" />
-      <Route element={<Quiz />} path="/quiz/:quizId" />
-      <Route element={<JoinQuiz />} path="/join" />
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route element={<Landing />} index path="/" />
+        <Route element={<Home />} index path="/home" />
+        <Route element={<Login />} index path="/login" />
+        <Route element={<Makequiz />} path="/makequiz" />
+        <Route element={<Quiz />} path="/quiz/:quizId" />
+        <Route element={<JoinQuiz />} path="/join" />
+      </Routes>
+    </AuthProvider>
   );
 }
 
