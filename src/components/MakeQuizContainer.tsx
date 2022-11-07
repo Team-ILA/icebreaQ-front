@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useList } from 'react-use';
 import { HiOutlinePlusCircle } from 'react-icons/hi';
+import { useNavigate } from 'react-router-dom';
 import SelectMenus, { SelectMenuItemProps } from './SelectMenus';
 import QuestionCard, { Question } from './QuestionCard';
 import DefaultButton from './DefaultButton';
@@ -18,6 +19,7 @@ const initialQuestion: Question = {
 };
 
 const MakeQuizContainer = () => {
+  const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [questions, { push, updateAt, removeAt }] = useList<Question>([
     initialQuestion,
@@ -45,7 +47,10 @@ const MakeQuizContainer = () => {
       limit.id,
       questions.map((e) => e.questionContent)
     ).then(({ data }) => {
-      console.log(data.quizId);
+      navigate({
+        pathname: 'completed',
+        search: `?quizId=${data.quizId}`,
+      });
     });
   };
 

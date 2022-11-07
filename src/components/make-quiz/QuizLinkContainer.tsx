@@ -3,10 +3,10 @@ import { Link, useSearchParams, Navigate } from 'react-router-dom';
 import { Button } from 'flowbite-react';
 import CopyToClipBoard from './CopyToClipBoard';
 
-const CompletedContainer = () => {
+const QuizLinkContainer = () => {
   const [searchParams] = useSearchParams();
   const quizId = searchParams.get('quizId');
-  const link = `http://localhost:3000/join/${quizId}`;
+  const link = `${process.env.REACT_APP_HOST}/quiz/${quizId}`;
 
   if (!quizId) {
     return <Navigate to="/" replace />;
@@ -28,17 +28,19 @@ const CompletedContainer = () => {
         created!
       </div>
       <div className="flex w-full items-center justify-center gap-4">
-        <div className="form-control bg-classNameip-padding m-0 block w-full grow overflow-hidden rounded border border-solid border-gray-300 bg-white px-4 py-2 text-xl font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none">
-          {link}
-        </div>
+        <input
+          type="text"
+          value={link}
+          className="form-control bg-classNameip-padding m-0 block w-full grow overflow-hidden rounded border border-solid border-gray-300 bg-white px-4 py-2 text-xl font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
+        ></input>
         <CopyToClipBoard link={link} />
       </div>
 
-      <Link className="w-1/3" to={`/join/${quizId}`}>
+      <Link className="w-1/3" to={`/quiz/${quizId}`}>
         <Button className="mt-2 h-full w-full">Join Quiz</Button>
       </Link>
     </div>
   );
 };
 
-export default CompletedContainer;
+export default QuizLinkContainer;

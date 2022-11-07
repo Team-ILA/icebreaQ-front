@@ -1,11 +1,11 @@
 import React from 'react';
-import CompletedContainer from '../components/make-quiz/CompletedContainer';
+import QuizLinkContainer from '../components/make-quiz/QuizLinkContainer';
 import MainLayout from '../layouts/MainLayout';
 
 const Completed = () => {
   return (
     <MainLayout>
-      <CompletedContainer />
+      <QuizLinkContainer />
     </MainLayout>
   );
 };
