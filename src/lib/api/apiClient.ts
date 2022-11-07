@@ -1,7 +1,6 @@
 import axios from 'axios';
-import config from '../../config';
 
-const host = config.API_HOST;
+const host = process.env.REACT_APP_API_HOST;
 
 const apiClient = axios.create({
   baseURL: host,

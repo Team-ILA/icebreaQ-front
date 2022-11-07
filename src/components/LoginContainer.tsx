@@ -1,29 +1,79 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
+import { basicLogin } from '../lib/api/auth';
+import useAuth from '../hooks/useAuth';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const LoginContainer = () => {
+  const emailRef = useRef<HTMLInputElement>(null);
+  const [invalid, setInvalid] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [, setAuth] = useAuth();
+  const navigate = useNavigate();
+  const { state } = useLocation();
+
+  const loginHandler = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setEmail('');
+    setPassword('');
+    emailRef.current?.focus();
+    basicLogin(email, password)
+      .then(({ data }) => {
+        setAuth({
+          email: data.email,
+          username: data.username,
+        });
+        if (state) {
+          navigate(state);
+        } else {
+          navigate('/');
+        }
+      })
+      .catch(() => setInvalid(true));
+  };
+
+  const emailChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const passWordChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
   return (
     <div className="w-7/12 rounded-lg border-2 bg-slate-100 p-6">
-      <form>
+      <form onSubmit={loginHandler}>
         <div className="mb-6">
           <input
             type="text"
             className="form-control bg-classNameip-padding m-0 block w-full rounded border border-solid border-gray-300 bg-white px-4 py-2 text-xl font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
-            id="exampleFormControlInput2"
+            id="email"
+            value={email}
+            onChange={emailChangeHandler}
+            ref={emailRef}
             placeholder="Email address"
           />
         </div>
-        <div className="mb-6">
+        <div>
           <input
             type="password"
             className="form-control bg-classNameip-padding m-0 block w-full rounded border border-solid border-gray-300 bg-white px-4 py-2 text-xl font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
-            id="exampleFormControlInput2"
+            id="password"
+            value={password}
+            onChange={passWordChangeHandler}
             placeholder="Password"
           />
         </div>
 
+        {invalid && (
+          <div className="mt-2 font-bold text-red-500">
+            Invalid email or password
+          </div>
+        )}
+
         <div className="mt-10 text-center">
           <button
-            type="button"
+            type="submit"
             className="inline-block rounded bg-blue-600 px-7 py-3 text-sm font-medium uppercase leading-snug text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg"
           >
             Login
