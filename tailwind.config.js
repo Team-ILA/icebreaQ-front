@@ -2,7 +2,10 @@
 const { fontFamily } = require('tailwindcss/defaultTheme');
 
 module.exports = {
-  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}',
+    'node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}',
+  ],
   theme: {
     fontFamily: {
       sans: ['Montserrat', ...fontFamily.sans],
@@ -16,5 +19,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require('tailwindcss-animation-delay')],
+  plugins: [require('tailwindcss-animation-delay'), require('flowbite/plugin')],
 };

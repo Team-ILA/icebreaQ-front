@@ -7,9 +7,7 @@ const MakeQuiz = () => {
   return (
     <RouteGuard>
       <MainLayout>
-        <div className="pt-[58px]">
-          <MakeQuizContainer />
-        </div>
+        <MakeQuizContainer />
       </MainLayout>
     </RouteGuard>
   );

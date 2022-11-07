@@ -4,6 +4,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 type SelectMenusProps = {
   items: SelectMenuItemProps[];
+  setCurItem: React.Dispatch<React.SetStateAction<any>>;
 };
 
 export interface SelectMenuItemProps {
@@ -55,17 +56,23 @@ const SelectMenuItem = ({ content }: SelectMenuItemProps) => {
   );
 };
 
-const SelectMenus = ({ items }: SelectMenusProps) => {
-  const [selected, setSelected] = useState(items[0].content);
+const SelectMenus = ({ items, setCurItem }: SelectMenusProps) => {
+  const [selected, setSelected] = useState(items[0]);
 
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox
+      value={selected}
+      onChange={(e) => {
+        setCurItem(e);
+        setSelected(e);
+      }}
+    >
       {({ open }) => (
         <>
           <div className="relative mt-1">
             <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
               <span className="flex items-center">
-                <span className="block truncate">{selected}</span>
+                <span className="block truncate">{selected.content}</span>
               </span>
               <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
                 <ChevronUpDownIcon
