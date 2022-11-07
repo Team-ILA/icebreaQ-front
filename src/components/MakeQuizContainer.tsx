@@ -1,15 +1,16 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useList } from 'react-use';
 import { HiOutlinePlusCircle } from 'react-icons/hi';
 import SelectMenus, { SelectMenuItemProps } from './SelectMenus';
 import QuestionCard, { Question } from './QuestionCard';
 import DefaultButton from './DefaultButton';
+import { requestMakeQuiz } from '../lib/api/quiz';
 
 const personnelOptions: SelectMenuItemProps[] = [
-  { id: 2, content: '4 people' },
-  { id: 3, content: '6 people' },
-  { id: 4, content: '8 people' },
-  { id: 5, content: '10 people' },
+  { id: 4, content: '4 people' },
+  { id: 6, content: '6 people' },
+  { id: 8, content: '8 people' },
+  { id: 10, content: '10 people' },
 ];
 
 const initialQuestion: Question = {
@@ -21,6 +22,8 @@ const MakeQuizContainer = () => {
   const [questions, { push, updateAt, removeAt }] = useList<Question>([
     initialQuestion,
   ]);
+  const [title, setTitle] = useState<string>('');
+  const [limit, setLimit] = useState<SelectMenuItemProps>(personnelOptions[0]);
 
   const addQuestionHandler = async () => {
     await push(initialQuestion);
@@ -31,9 +34,27 @@ const MakeQuizContainer = () => {
     });
   };
 
+  const titleChangeHanlder = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
+
+  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    requestMakeQuiz(
+      title,
+      limit.id,
+      questions.map((e) => e.questionContent)
+    ).then(({ data }) => {
+      console.log(data.quizId);
+    });
+  };
+
   return (
     <div ref={scrollRef} className="pt-[58px]">
-      <form className="mx-auto my-7 flex w-1/3 flex-col items-center gap-5 rounded-lg bg-gray-50 p-5">
+      <form
+        onSubmit={submitHandler}
+        className="mx-auto my-7 flex w-1/3 flex-col items-center gap-5 rounded-lg bg-gray-50 p-5"
+      >
         <p className="text-2xl font-bold">Making a new quiz</p>
         <div className="w-full space-y-2 rounded border-2 bg-violet-200 p-3">
           <div className="mb-3">
@@ -42,11 +63,13 @@ const MakeQuizContainer = () => {
               type="text"
               className="form-control bg-classNameip-padding m-0 block w-full rounded border border-solid border-gray-300 bg-white px-3 py-2 text-sm font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
               id="quiz title"
+              value={title}
+              onChange={titleChangeHanlder}
             />
           </div>
           <div>
             <p>How many people can particiapte in?</p>
-            <SelectMenus items={personnelOptions} />
+            <SelectMenus items={personnelOptions} setCurItem={setLimit} />
           </div>
         </div>
         {questions.map((question, index) => {
