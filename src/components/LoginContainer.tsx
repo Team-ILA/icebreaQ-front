@@ -36,7 +36,7 @@ const LoginContainer = () => {
   };
 
   return (
-    <div className="w-7/12 rounded-lg border-2 bg-slate-100 p-6">
+    <div className="w-1/3 rounded-lg border-2 bg-slate-100 p-6">
       <form onSubmit={loginHandler}>
         <div className="mb-6">
           <input
