@@ -4,7 +4,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 type SelectMenusProps = {
   items: SelectMenuItemProps[];
-  setCurItem: React.Dispatch<React.SetStateAction<any>>;
+  setCurItem: React.Dispatch<React.SetStateAction<SelectMenuItemProps>>;
 };
 
 export interface SelectMenuItemProps {
