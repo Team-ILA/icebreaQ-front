@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { HiOutlineUser } from 'react-icons/hi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { requestLogOut } from '../lib/api/auth';
 import useAuthAction from '../hooks/useAuthAction';
 
@@ -15,11 +15,11 @@ function classNames(...classes: string[]) {
 
 const Avatar = ({ username }: AvatarProps) => {
   const { signOut } = useAuthAction();
+  const navigate = useNavigate();
   const SignOutClickHandler = () => {
     signOut();
     requestLogOut().then(() => {
-      window.location.reload();
-      window.location.href = '/';
+      navigate('/');
     });
   };
 
