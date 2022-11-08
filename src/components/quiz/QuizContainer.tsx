@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Spinner } from 'flowbite-react';
 import QuizFooter from './footer/QuizFooter';
@@ -11,8 +11,7 @@ import Connection, {
 import CamGrid from './cam/CamGrid';
 
 const QuizContainer = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let socketInstance: Connection | null = null;
+  const socketInstance = useRef<Connection | null>(null);
   const [, setStreaming] = useState(false);
   const [, setDisplayStream] = useState(false);
   const [isConnected, setConnected] = useState<boolean>(false);
@@ -22,7 +21,7 @@ const QuizContainer = () => {
 
   const startConnection = () => {
     if (quizId) {
-      socketInstance = createSocketConnectionInstance({
+      socketInstance.current = createSocketConnectionInstance({
         updateInstance: updateFromInstance,
         videoItems: videoItems,
         quizId: quizId,
@@ -40,17 +39,17 @@ const QuizContainer = () => {
 
   useEffect(() => {
     return () => {
-      socketInstance?.destoryConnection();
+      socketInstance.current?.destoryConnection();
     };
   }, []);
 
   useEffect(() => {
-    // console.log(videoItems);
+    console.log(videoItems);
+    socketInstance.current?.setVideoItems(videoItems);
   }, [videoItems]);
 
   useEffect(() => {
     if (auth.username) {
-      socketInstance?.destoryConnection();
       startConnection();
     }
   }, [auth]);
@@ -71,6 +70,9 @@ const QuizContainer = () => {
       <div className="h-screen">
         <QuestionWrapper questionNum={1} content="Any plans for the weekend?" />
         <CamGrid videoItems={videoItems} />
+        <button onClick={() => socketInstance?.current?.destoryConnection()}>
+          hi
+        </button>
         <QuizFooter />
       </div>
     </>

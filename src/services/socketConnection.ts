@@ -47,9 +47,12 @@ export default class Connection {
     this.initializePeersEvents();
   }
 
+  setVideoItems(videoItems: Map<string, VideoDetail>) {
+    this.settings.videoItems = videoItems;
+  }
+
   initializeSocketEvents() {
     this.socket.on('connect', () => {
-      console.log('connected');
       this.settings.updateInstance('connection', true);
     });
     this.socket.on('user_disconnected', (userID) => {
@@ -57,7 +60,7 @@ export default class Connection {
       this.removeVideo(userID);
     });
     this.socket.on('disconnect', () => {
-      console.log('disconnect');
+      this.myPeer.destroy();
     });
     // this.socket.on('error', (err) => {
     //   console.log('socket error --', err);
@@ -173,6 +176,7 @@ export default class Connection {
     myMediaTracks?.forEach((track: MediaStreamTrack) => {
       track.stop();
     });
+    this.removeVideo(this.myID);
     this.socket.disconnect();
     this.myPeer.destroy();
   };
