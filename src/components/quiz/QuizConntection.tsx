@@ -12,7 +12,7 @@ import useAudioStatus from '../../hooks/useAudioStatus';
 import useQuizInfo from '../../hooks/useQuizinfo';
 import usePeer from '../../hooks/usePeer';
 import { VideoDetail } from '../../context/VideoItemsProvider';
-import { getQuizInfo } from '../../lib/api/quiz';
+import { getQuizInfo, quizReponse } from '../../lib/api/quiz';
 
 type QuizConnectionProps = {
   quizId: string;
@@ -194,6 +194,14 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
       });
   };
 
+  const toNextQuestion = () => {
+    socket.emit('to_next_question', quizId);
+  };
+
+  const toPrevQuestion = () => {
+    socket.emit('to_prev_question', quizId);
+  };
+
   useEffect(() => {
     setCamStatus(false);
     setMicStatus(true);
@@ -221,6 +229,17 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
         return { ...prev, answers: updatedAnswer };
       });
     });
+    socket.on('quiz_updated', (quiz: quizReponse) => {
+      setQuizInfo({
+        current_question: {
+          questionNum: quiz.current_question + 1,
+          content: quiz.QA[quiz.current_question].question,
+        },
+        answers: quiz.QA[quiz.current_question].answer,
+        title: quiz.title,
+        creator: quiz.creator,
+      });
+    });
 
     return () => {
       destoryConnection();
@@ -238,6 +257,8 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   return (
     <div>
       <QuizContainer
+        movePrev={toPrevQuestion}
+        moveNext={toNextQuestion}
         submitAnswer={submitAnswer}
         destoryConnection={destoryConnection}
       />

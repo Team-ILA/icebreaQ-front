@@ -1,14 +1,12 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 type ExitButtonProps = {
   destoryConnection: () => void;
 };
 
 const ExitButton = ({ destoryConnection }: ExitButtonProps) => {
-  const navigate = useNavigate();
   const exitHandler = () => {
-    navigate('/join');
+    location.href = '/join';
     destoryConnection();
   };
   return (

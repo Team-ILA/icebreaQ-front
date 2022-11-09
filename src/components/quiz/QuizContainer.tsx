@@ -11,11 +11,15 @@ import useVideoItems from '../../hooks/useVideoItems';
 type QuizContainerProps = {
   submitAnswer: (answer: string) => void;
   destoryConnection: () => void;
+  moveNext: () => void;
+  movePrev: () => void;
 };
 
 const QuizContainer = ({
   submitAnswer,
   destoryConnection,
+  moveNext,
+  movePrev,
 }: QuizContainerProps) => {
   const [isConnected] = useConnected();
   const [quizInfo] = useQuizInfo();
@@ -37,6 +41,8 @@ const QuizContainer = ({
       <div className="h-screen">
         <button onClick={() => console.log(videoItems)}>hihi</button>
         <QuestionWrapper
+          moveNext={moveNext}
+          movePrev={movePrev}
           questionNum={quizInfo.current_question.questionNum}
           content={quizInfo.current_question.content}
         />
