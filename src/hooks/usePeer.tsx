@@ -20,6 +20,7 @@ export default function usePeer(
     if (myPeer) {
       myPeer.destroy();
     }
+
     setPeer(null);
     setMyPeerID('');
     setVideoItems({});

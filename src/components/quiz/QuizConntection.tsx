@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Peer, { MediaConnection } from 'peerjs';
 import { io, Socket } from 'socket.io-client';
 import ServerToClientEvents from '../../lib/socketio/events/ServerToClientEvents';
@@ -23,15 +23,14 @@ const host = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : '';
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(host);
 
 const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
-  const peers: Record<string, MediaConnection> = {};
+  const [peers, setPeers] = useState<Record<string, MediaConnection>>({});
   const [, setConnected] = useConnected();
-  const [camStatus] = useCamStatus();
-  const [audioStatus] = useAudioStatus();
+  const [camStatus, setCamStatus] = useCamStatus();
+  const [audioStatus, setMicStatus] = useAudioStatus();
   const [videoItems, setVideoItems] = useVideoItems();
   const [, setQuizInfo] = useQuizInfo();
 
   const createVideo = (video: VideoDetail) => {
-    console.log('hi');
     setVideoItems((prev) => {
       return { ...prev, [video.id]: video };
     });
@@ -58,13 +57,15 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   const [, myPeerID] = usePeer(initPeer, setVideoItems);
 
   const setNavigatorToStream = (peer: Peer) => {
-    getVideoAudioStream().then((stream) => {
-      if (stream) {
-        createVideo({ id: peer.id, stream });
-        setPeersListeners(stream, peer);
-        newUserConnection(stream, peer);
-      }
-    });
+    navigator.mediaDevices
+      .getUserMedia({ video: false, audio: true })
+      .then((stream) => {
+        if (stream) {
+          createVideo({ id: peer.id, stream });
+          setPeersListeners(stream, peer);
+          newUserConnection(stream, peer);
+        }
+      });
   };
   const submitAnswer = (answer: string) => {
     socket.emit('new_answer', answer, quizId);
@@ -90,7 +91,9 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
       call.on('error', () => {
         removeVideo(call.metadata.id);
       });
-      peers[call.metadata.id] = call;
+      setPeers((prev) => {
+        return { ...prev, [call.metadata.id]: call };
+      });
     });
   };
 
@@ -115,9 +118,10 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     call.on('close', () => {
       removeVideo(userId);
     });
-    peers[userId] = call;
+    setPeers((prev) => {
+      return { ...prev, [userId]: call };
+    });
   };
-
   const getMyVideo = () => {
     return videoItems[myPeerID];
   };
@@ -177,14 +181,22 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   };
 
   const destoryConnection = () => {
-    const myMediaTracks = videoItems[myPeerID]?.stream.getTracks();
-    console.log(myPeerID);
-    myMediaTracks?.forEach((track: MediaStreamTrack) => {
-      track.stop();
-    });
+    socket.off('connect');
+    socket.off('answer_submitted');
+    socket.off('disconnect');
+    socket.off('new_user_connected');
+    socket.off('user_disconnected');
+    setConnected(false);
+    getMyVideo()
+      .stream.getTracks()
+      .forEach((tracks) => {
+        tracks.stop();
+      });
   };
 
   useEffect(() => {
+    setCamStatus(false);
+    setMicStatus(true);
     getQuizInfo(quizId).then(({ data }) => {
       setQuizInfo({
         current_question: {
@@ -211,12 +223,6 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     });
 
     return () => {
-      socket.off('connect');
-      socket.off('answer_submitted');
-      socket.off('disconnect');
-      socket.off('new_user_connected');
-      socket.off('user_disconnected');
-      setConnected(false);
       destoryConnection();
     };
   }, []);
