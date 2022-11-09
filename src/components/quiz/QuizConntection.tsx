@@ -19,11 +19,12 @@ type QuizConnectionProps = {
 };
 
 const host = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : '';
+let myId = '';
+const myPeer = new Peer();
 
 const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(host);
-  const myPeer = new Peer();
-  let myId = '';
+
   const [peers, setPeers] = useState<Record<string, MediaConnection>>({});
   const [, setConnected] = useConnected();
   const [camStatus] = useCamStatus();
@@ -116,6 +117,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
 
   const toggleVideoTrack = () => {
     const myVideo = getMyVideo();
+    console.log(myVideo);
     if (!myVideo) return;
     if (!camStatus) {
       myVideo.stream
@@ -219,6 +221,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
       console.log('open');
       setConnected(true);
       myId = id;
+      console.log(myId);
       const userData: UserDetail = {
         userId: id,
         quizId: quizId,
