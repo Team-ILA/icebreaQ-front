@@ -6,7 +6,6 @@ import AnswerList from './answers/AnswerList';
 import useConnected from '../../hooks/useConnected';
 import useQuizInfo from '../../hooks/useQuizinfo';
 import CamGrid from './cam/CamGrid';
-import useVideoItems from '../../hooks/useVideoItems';
 
 type QuizContainerProps = {
   submitAnswer: (answer: string) => void;
@@ -23,7 +22,6 @@ const QuizContainer = ({
 }: QuizContainerProps) => {
   const [isConnected] = useConnected();
   const [quizInfo] = useQuizInfo();
-  const [videoItems] = useVideoItems();
 
   if (!isConnected) {
     return (
@@ -39,7 +37,6 @@ const QuizContainer = ({
   return (
     <>
       <div className="h-screen">
-        <button onClick={() => console.log(videoItems)}>hihi</button>
         <QuestionWrapper
           moveNext={moveNext}
           movePrev={movePrev}

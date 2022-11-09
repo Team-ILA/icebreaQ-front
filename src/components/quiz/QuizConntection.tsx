@@ -25,8 +25,8 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(host);
 const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   const [peers, setPeers] = useState<Record<string, MediaConnection>>({});
   const [, setConnected] = useConnected();
-  const [camStatus, setCamStatus] = useCamStatus();
-  const [audioStatus, setMicStatus] = useAudioStatus();
+  const [camStatus] = useCamStatus();
+  const [audioStatus] = useAudioStatus();
   const [videoItems, setVideoItems] = useVideoItems();
   const [, setQuizInfo] = useQuizInfo();
 
@@ -57,15 +57,13 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   const [, myPeerID] = usePeer(initPeer, setVideoItems);
 
   const setNavigatorToStream = (peer: Peer) => {
-    navigator.mediaDevices
-      .getUserMedia({ video: false, audio: true })
-      .then((stream) => {
-        if (stream) {
-          createVideo({ id: peer.id, stream });
-          setPeersListeners(stream, peer);
-          newUserConnection(stream, peer);
-        }
-      });
+    getVideoAudioStream().then((stream) => {
+      if (stream) {
+        createVideo({ id: peer.id, stream });
+        setPeersListeners(stream, peer);
+        newUserConnection(stream, peer);
+      }
+    });
   };
   const submitAnswer = (answer: string) => {
     socket.emit('new_answer', answer, quizId);
@@ -203,19 +201,21 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   };
 
   useEffect(() => {
-    setCamStatus(false);
-    setMicStatus(true);
-    getQuizInfo(quizId).then(({ data }) => {
-      setQuizInfo({
-        current_question: {
-          questionNum: data.current_question + 1,
-          content: data.QA[data.current_question].question,
-        },
-        answers: data.QA[data.current_question].answer,
-        title: data.title,
-        creator: data.creator,
+    getQuizInfo(quizId)
+      .then(({ data }) => {
+        setQuizInfo({
+          current_question: {
+            questionNum: data.current_question + 1,
+            content: data.QA[data.current_question].question,
+          },
+          answers: data.QA[data.current_question].answer,
+          title: data.title,
+          creator: data.creator,
+        });
+      })
+      .catch(() => {
+        location.href = '/join';
       });
-    });
 
     socket.on('connect', () => {
       console.log('connected');

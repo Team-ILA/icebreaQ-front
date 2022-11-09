@@ -7,7 +7,7 @@ export const AudioStatusContext = createContext<AudioStatusType>(
 );
 
 const AudioStatusProvider = ({ children }: { children: React.ReactNode }) => {
-  const audioStatusState = useState(true);
+  const audioStatusState = useState(false);
 
   return (
     <AudioStatusContext.Provider value={audioStatusState}>

@@ -10,6 +10,23 @@ export type loginResponse = {
   username: string;
 };
 
+export const requestRegsiter = (
+  email: string,
+  username: string,
+  password: string
+) =>
+  apiClient.post<regsiterResponse>('/user/register', {
+    email: email,
+    username: username,
+    password: password,
+  });
+
+export type regsiterResponse = {
+  message: string;
+  email: string;
+  username: string;
+};
+
 export const requestLogOut = () => apiClient.post('/user/logout');
 
 export const getUserInfo = () => apiClient.get<userInfoResponse>('/user/');
