@@ -169,6 +169,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
 
   const destoryConnection = () => {
     const myMediaTracks = videoItems[myPeer.id]?.stream.getTracks();
+    console.log(myMediaTracks);
     myMediaTracks?.forEach((track: MediaStreamTrack) => {
       track.stop();
     });
@@ -195,7 +196,6 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
 
     socket.on('connect', () => {
       console.log('connected');
-      setConnected(true);
     });
     socket.on('user_disconnected', (userId) => {
       setPeers((prev) => {
@@ -210,9 +210,9 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
         return { ...prev, answers: updatedAnswer };
       });
     });
-    socket.on('disconnect', () => {
-      myPeer.destroy();
-    });
+    // socket.on('disconnect', () => {
+    //   myPeer.destroy();
+    // });
 
     myPeer.on('open', (id) => {
       const userData: UserDetail = {
@@ -220,6 +220,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
         quizId: quizId,
         username: username,
       };
+      setConnected(true);
       setNavigatorToStream();
       socket.emit('join_room', userData);
     });
@@ -233,6 +234,8 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
       socket.off('disconnect');
       socket.off('new_user_connected');
       socket.off('user_disconnected');
+      setConnected(false);
+      destoryConnection();
     };
   }, []);
 
