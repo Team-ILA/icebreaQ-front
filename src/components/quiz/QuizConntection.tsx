@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Peer, { MediaConnection } from 'peerjs';
+import { io, Socket } from 'socket.io-client';
+import ServerToClientEvents from '../../lib/socketio/events/ServerToClientEvents';
+import ClientToServerEvents from '../../lib/socketio/events/ClientToServerEvents';
 import QuizContainer from './QuizContainer';
 import UserDetail from '../../lib/socketio/UserDetail';
 import useCamStatus from '../../hooks/useCamStatus';
@@ -7,18 +10,21 @@ import useConnected from '../../hooks/useConnected';
 import useVideoItems from '../../hooks/useVideoItems';
 import useAudioStatus from '../../hooks/useAudioStatus';
 import useQuizInfo from '../../hooks/useQuizinfo';
-import useSocket from '../../hooks/useSocket';
 import { VideoDetail } from '../../context/VideoItemsProvider';
+import { getQuizInfo } from '../../lib/api/quiz';
 
 type QuizConnectionProps = {
   quizId: string;
   username: string;
 };
 
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+  `ws://${process.env.REACT_APP_SERVER_HOST}`
+);
+
 let myPeer = new Peer();
 
 const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
-  const socket = useSocket();
   const [peers, setPeers] = useState<Record<string, MediaConnection>>({});
   const [myId, setMyId] = useState('');
   const [, setConnected] = useConnected();
@@ -178,12 +184,20 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   };
 
   useEffect(() => {
-    // socket.connect();
+    getQuizInfo(quizId).then(({ data }) => {
+      setQuizInfo({
+        current_question: {
+          questionNum: data.current_question + 1,
+          content: data.QA[data.current_question].question,
+        },
+        answers: data.QA[data.current_question].answer,
+        title: data.title,
+        creator: data.creator,
+      });
+    });
+
     socket.on('connect', () => {
       console.log('connected');
-    });
-    socket.on('greeting_response', (quizInfo) => {
-      setQuizInfo(quizInfo);
     });
     socket.on('user_disconnected', (userId) => {
       setPeers((prev) => {
@@ -205,6 +219,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     });
 
     myPeer.on('open', (id) => {
+      console.log('open');
       setConnected(true);
       setMyId(id);
       const userData: UserDetail = {
@@ -212,7 +227,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
         quizId: quizId,
         username: username,
       };
-      socket.emit('greeting', userData);
+      socket.emit('join_room', userData);
     });
     myPeer.on('error', (err) => {
       console.log(err);
@@ -224,11 +239,11 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     setNavigatorToStream();
   }, [myId]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     destoryConnection();
-  //   };
-  // }, []);
+  useEffect(() => {
+    return () => {
+      destoryConnection();
+    };
+  }, [socket]);
 
   useEffect(() => {
     toggleVideoTrack();

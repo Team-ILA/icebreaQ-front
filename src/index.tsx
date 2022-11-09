@@ -10,7 +10,6 @@ import ConnectedProvider from './context/ConnectedProvider';
 import VideoItemsProvider from './context/VideoItemsProvider';
 import QuizInfoProvider from './context/QuizInfoProvider';
 import './index.css';
-import SocketProvider from './context/SocketProvider';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -24,9 +23,7 @@ root.render(
           <VideoItemsProvider>
             <ConnectedProvider>
               <QuizInfoProvider>
-                <SocketProvider>
-                  <App />
-                </SocketProvider>
+                <App />
               </QuizInfoProvider>
             </ConnectedProvider>
           </VideoItemsProvider>
