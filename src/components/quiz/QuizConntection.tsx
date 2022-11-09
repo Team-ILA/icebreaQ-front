@@ -20,11 +20,10 @@ type QuizConnectionProps = {
 
 const host = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : '';
 let myId = '';
-const myPeer = new Peer();
+let myPeer = new Peer();
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(host);
 
 const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
-  const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(host);
-
   const [peers, setPeers] = useState<Record<string, MediaConnection>>({});
   const [, setConnected] = useConnected();
   const [camStatus] = useCamStatus();
@@ -196,7 +195,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     });
 
     socket.on('connect', () => {
-      console.log('connected');
+      setConnected(true);
     });
     socket.on('user_disconnected', (userId) => {
       setPeers((prev) => {
@@ -216,12 +215,15 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
       setConnected(false);
       myPeer.destroy();
     });
+  }, []);
 
+  useEffect(() => {
+    myPeer.destroy();
+    myPeer = new Peer();
     myPeer.on('open', (id) => {
       console.log('open');
-      setConnected(true);
+
       myId = id;
-      console.log(myId);
       const userData: UserDetail = {
         userId: id,
         quizId: quizId,
@@ -234,9 +236,6 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
       console.log(err);
       myPeer.reconnect();
     });
-  }, []);
-
-  useEffect(() => {
     return () => {
       destoryConnection();
     };
