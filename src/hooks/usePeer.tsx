@@ -7,7 +7,7 @@ const userMediaConfig = {
 };
 
 export default function usePeer(
-  init: (id: string) => void,
+  init: (id: string, peer: Peer) => void,
   addRemoteStream: ({
     id,
     stream,
@@ -34,7 +34,7 @@ export default function usePeer(
     peer.on('open', (id) => {
       setPeer(peer);
       setMyPeerID(peer.id);
-      init(id);
+      init(id, peer);
     });
 
     peer.on('call', (call) => {

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { MediaConnection } from 'peerjs';
+import Peer, { MediaConnection } from 'peerjs';
 import { io, Socket } from 'socket.io-client';
 import ServerToClientEvents from '../../lib/socketio/events/ServerToClientEvents';
 import ClientToServerEvents from '../../lib/socketio/events/ClientToServerEvents';
@@ -44,9 +44,9 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     });
   };
 
-  const initPeer = (id: string) => {
+  const initPeer = (id: string, peer: Peer) => {
     setConnected(true);
-    setNavigatorToStream();
+    setNavigatorToStream(peer);
     const userData: UserDetail = {
       userId: id,
       quizId: quizId,
@@ -54,14 +54,14 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     };
     socket.emit('join_room', userData);
   };
-  const [myPeer, myPeerID] = usePeer(initPeer, createVideo, removeVideo);
+  const [, myPeerID] = usePeer(initPeer, createVideo, removeVideo);
 
-  const setNavigatorToStream = () => {
+  const setNavigatorToStream = (peer: Peer) => {
     getVideoAudioStream().then((stream) => {
       if (stream) {
         createVideo({ id: myPeerID, stream });
-        setPeersListeners(stream);
-        newUserConnection(stream);
+        setPeersListeners(stream, peer);
+        newUserConnection(stream, peer);
       }
     });
   };
@@ -77,10 +77,10 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     });
   };
 
-  const setPeersListeners = (stream: MediaStream) => {
-    myPeer?.on('call', (call) => {
+  const setPeersListeners = (stream: MediaStream, peer: Peer) => {
+    peer.on('call', (call) => {
       call.answer(stream);
-      call.on('stream', (userVideoStream) => {
+      call.on('stream', (userVideoStream: MediaStream) => {
         createVideo({ id: call.metadata.id, stream: userVideoStream });
       });
       call.on('close', () => {
@@ -93,24 +93,28 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     });
   };
 
-  const newUserConnection = (stream: MediaStream) => {
+  const newUserConnection = (stream: MediaStream, peer: Peer) => {
     socket.on('new_user_connected', (userData: UserDetail) => {
-      connectToNewUser(userData, stream);
+      connectToNewUser(userData, stream, peer);
     });
   };
 
-  const connectToNewUser = (userData: UserDetail, stream: MediaStream) => {
+  const connectToNewUser = (
+    userData: UserDetail,
+    stream: MediaStream,
+    peer: Peer
+  ) => {
     const { userId } = userData;
-    const call = myPeer?.call(userId, stream, {
+    const call = peer.call(userId, stream, {
       metadata: { id: myPeerID },
     });
-    call?.on('stream', (userVideoStream) => {
+    call.on('stream', (userVideoStream) => {
       createVideo({ id: userId, stream: userVideoStream, userData });
     });
-    call?.on('close', () => {
+    call.on('close', () => {
       removeVideo(userId);
     });
-    if (call) peers[userId] = call;
+    peers[userId] = call;
   };
 
   const getMyVideo = () => {
