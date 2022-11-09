@@ -23,7 +23,7 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(host);
 
 const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   const [myPeer, setMyPeer] = useState<Peer>(new Peer());
-  const [peers, setPeers] = useState<Record<string, MediaConnection>>({});
+  const peers: Record<string, MediaConnection> = {};
   const [, setConnected] = useConnected();
   const [camStatus] = useCamStatus();
   const [audioStatus] = useAudioStatus();
@@ -70,9 +70,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
       call.on('error', () => {
         removeVideo(call.metadata.id);
       });
-      setPeers((prev) => {
-        return { ...prev, [call.metadata.id]: call };
-      });
+      peers[call.metadata.id] = call;
     });
   };
 
@@ -96,9 +94,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     call.on('error', () => {
       removeVideo(userId);
     });
-    setPeers((prev) => {
-      return { ...prev, [userId]: call };
-    });
+    peers[userId] = call;
   };
 
   const removeVideo = (id: string) => {
@@ -198,12 +194,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
       console.log('connected');
     });
     socket.on('user_disconnected', (userId) => {
-      setPeers((prev) => {
-        const newState = prev;
-        newState[userId].close();
-        delete newState[userId];
-        return newState;
-      });
+      if (peers[userId]) peers[userId].close();
     });
     socket.on('answer_submitted', ({ updatedAnswer }) => {
       setQuizInfo((prev) => {
