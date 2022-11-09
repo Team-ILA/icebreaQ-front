@@ -19,11 +19,10 @@ type QuizConnectionProps = {
 };
 
 const host = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : '';
-let myId = '';
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(host);
 
 const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
-  const [myPeer, setMyPeer] = useState<Peer | null>(null);
+  const [myPeer, setMyPeer] = useState<Peer>(new Peer());
   const [peers, setPeers] = useState<Record<string, MediaConnection>>({});
   const [, setConnected] = useConnected();
   const [camStatus] = useCamStatus();
@@ -36,10 +35,9 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   };
 
   const setNavigatorToStream = () => {
-    if (myId === '') return;
     getVideoAudioStream().then((stream) => {
       if (stream) {
-        createVideo({ id: myId, stream });
+        createVideo({ id: myPeer.id, stream });
         setPeersListeners(stream);
         newUserConnection(stream);
       }
@@ -60,9 +58,10 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   };
 
   const setPeersListeners = (stream: MediaStream) => {
-    myPeer?.on('call', (call) => {
+    myPeer.on('call', (call) => {
       call.answer(stream);
       call.on('stream', (userVideoStream) => {
+        console.log('nono');
         createVideo({ id: call.metadata.id, stream: userVideoStream });
       });
       call.on('close', () => {
@@ -85,12 +84,8 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
 
   const connectToNewUser = (userData: UserDetail, stream: MediaStream) => {
     const { userId } = userData;
-    if (!myPeer) {
-      console.log('myPeer is null');
-      return;
-    }
     const call = myPeer.call(userId, stream, {
-      metadata: { id: myId },
+      metadata: { id: myPeer.id },
     });
     call.on('stream', (userVideoStream) => {
       createVideo({ id: userId, stream: userVideoStream, userData });
@@ -115,20 +110,18 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   };
 
   const getMyVideo = () => {
-    return videoItems[myId];
+    return videoItems[myPeer.id];
   };
 
   const toggleVideoTrack = () => {
     const myVideo = getMyVideo();
-    console.log(myVideo);
-    console.log(videoItems);
     if (!myVideo) return;
     if (!camStatus) {
       myVideo.stream
         .getVideoTracks()
         .forEach((track: MediaStreamTrack) => track.stop());
       setVideoItems((prev) => {
-        return { ...prev, [myId]: myVideo };
+        return { ...prev, [myPeer.id]: myVideo };
       });
     } else {
       reInitializeStream();
@@ -150,7 +143,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   const reInitializeStream = () => {
     return new Promise((resolve) => {
       getVideoAudioStream().then((stream) => {
-        createVideo({ id: myId, stream });
+        createVideo({ id: myPeer.id, stream });
         replaceStream(stream);
         resolve(true);
       });
@@ -175,36 +168,18 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   };
 
   const destoryConnection = () => {
-    const myMediaTracks = videoItems[myId]?.stream.getTracks();
+    const myMediaTracks = videoItems[myPeer.id]?.stream.getTracks();
     myMediaTracks?.forEach((track: MediaStreamTrack) => {
       track.stop();
     });
-    removeVideo(myId);
-    socket.disconnect();
-    socket.connect();
-    myPeer?.destroy();
-  };
-
-  const initPeer = () => {
-    const newPeer = new Peer();
-    newPeer.on('open', (id) => {
-      myId = id;
-      const userData: UserDetail = {
-        userId: id,
-        quizId: quizId,
-        username: username,
-      };
-      setNavigatorToStream();
-      socket.emit('join_room', userData);
+    setVideoItems({});
+    setMyPeer((prev) => {
+      prev.destroy();
+      return new Peer();
     });
-    newPeer.on('error', () => {
-      newPeer.reconnect();
-    });
-    return newPeer;
   };
 
   useEffect(() => {
-    if (myPeer === null || myPeer.disconnected) setMyPeer(initPeer);
     getQuizInfo(quizId).then(({ data }) => {
       setQuizInfo({
         current_question: {
@@ -216,8 +191,10 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
         creator: data.creator,
       });
     });
+    setVideoItems({});
 
     socket.on('connect', () => {
+      console.log('connected');
       setConnected(true);
     });
     socket.on('user_disconnected', (userId) => {
@@ -234,9 +211,29 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
       });
     });
     socket.on('disconnect', () => {
-      setConnected(false);
-      myPeer?.destroy();
+      myPeer.destroy();
     });
+
+    myPeer.on('open', (id) => {
+      const userData: UserDetail = {
+        userId: id,
+        quizId: quizId,
+        username: username,
+      };
+      setNavigatorToStream();
+      socket.emit('join_room', userData);
+    });
+    myPeer.on('error', () => {
+      myPeer.reconnect();
+    });
+
+    return () => {
+      socket.off('connect');
+      socket.off('answer_submitted');
+      socket.off('disconnect');
+      socket.off('new_user_connected');
+      socket.off('user_disconnected');
+    };
   }, []);
 
   useEffect(() => {
