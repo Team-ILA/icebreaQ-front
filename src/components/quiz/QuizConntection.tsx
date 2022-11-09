@@ -34,7 +34,8 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   const [, setQuizInfo] = useQuizInfo();
 
   const submitAnswer = (answer: string) => {
-    socket.emit('new_answer', quizId, answer);
+    console.log(quizId);
+    socket.emit('new_answer', answer, quizId);
   };
 
   const setNavigatorToStream = () => {
