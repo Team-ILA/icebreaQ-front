@@ -31,6 +31,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   const [, setQuizInfo] = useQuizInfo();
 
   const createVideo = (video: VideoDetail) => {
+    console.log('hi');
     setVideoItems((prev) => {
       return { ...prev, [video.id]: video };
     });
@@ -54,12 +55,12 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     };
     socket.emit('join_room', userData);
   };
-  const [, myPeerID] = usePeer(initPeer, createVideo, removeVideo);
+  const [, myPeerID] = usePeer(initPeer, setVideoItems);
 
   const setNavigatorToStream = (peer: Peer) => {
     getVideoAudioStream().then((stream) => {
       if (stream) {
-        createVideo({ id: myPeerID, stream });
+        createVideo({ id: peer.id, stream });
         setPeersListeners(stream, peer);
         newUserConnection(stream, peer);
       }
@@ -177,7 +178,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
 
   const destoryConnection = () => {
     const myMediaTracks = videoItems[myPeerID]?.stream.getTracks();
-    console.log(myMediaTracks);
+    console.log(myPeerID);
     myMediaTracks?.forEach((track: MediaStreamTrack) => {
       track.stop();
     });

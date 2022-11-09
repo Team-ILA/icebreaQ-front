@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Peer } from 'peerjs';
+import { VideoDetail } from '../context/VideoItemsProvider';
 
 const userMediaConfig = {
   audio: { echoCancellation: true, noiseSuppression: true },
@@ -8,14 +9,9 @@ const userMediaConfig = {
 
 export default function usePeer(
   init: (id: string, peer: Peer) => void,
-  addRemoteStream: ({
-    id,
-    stream,
-  }: {
-    id: string;
-    stream: MediaStream;
-  }) => void,
-  removeRemoteStream: (arg: string) => void
+  setVideoItems: React.Dispatch<
+    React.SetStateAction<Record<string, VideoDetail>>
+  >
 ): [Peer | null, string] {
   const [myPeer, setPeer] = useState<Peer | null>(null);
   const [myPeerID, setMyPeerID] = useState('');
@@ -26,6 +22,7 @@ export default function usePeer(
     }
     setPeer(null);
     setMyPeerID('');
+    setVideoItems({});
   };
 
   useEffect(() => {
@@ -44,15 +41,31 @@ export default function usePeer(
 
         // Play the remote stream
         call.on('stream', (remoteStream) => {
-          addRemoteStream({ id: call.metadata.id, stream: remoteStream });
+          setVideoItems((prev) => {
+            return {
+              ...prev,
+              [call.metadata.id]: {
+                id: call.metadata.id,
+                stream: remoteStream,
+              },
+            };
+          });
         });
 
         call.on('close', () => {
-          removeRemoteStream(call.metadata.id);
+          setVideoItems((prev) => {
+            const newState = prev;
+            delete newState[call.metadata.id];
+            return newState;
+          });
         });
 
         call.on('error', () => {
-          removeRemoteStream(call.metadata.id);
+          setVideoItems((prev) => {
+            const newState = prev;
+            delete newState[call.metadata.id];
+            return newState;
+          });
         });
       });
     });
