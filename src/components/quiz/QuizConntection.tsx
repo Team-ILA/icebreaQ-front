@@ -18,15 +18,13 @@ type QuizConnectionProps = {
   username: string;
 };
 
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
-  `ws://${process.env.REACT_APP_SERVER_HOST}`
-);
-
-let myPeer = new Peer();
+const host = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : '';
 
 const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
+  const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(host);
+  const myPeer = new Peer();
+  let myId = '';
   const [peers, setPeers] = useState<Record<string, MediaConnection>>({});
-  const [myId, setMyId] = useState('');
   const [, setConnected] = useConnected();
   const [camStatus] = useCamStatus();
   const [audioStatus] = useAudioStatus();
@@ -34,7 +32,6 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   const [, setQuizInfo] = useQuizInfo();
 
   const submitAnswer = (answer: string) => {
-    console.log(quizId);
     socket.emit('new_answer', answer, quizId);
   };
 
@@ -203,6 +200,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
       setPeers((prev) => {
         const newState = prev;
         newState[userId].close();
+        delete newState[userId];
         return newState;
       });
       removeVideo(userId);
@@ -212,7 +210,6 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
         return { ...prev, answers: updatedAnswer };
       });
     });
-    myPeer = new Peer();
     socket.on('disconnect', () => {
       setConnected(false);
       myPeer.destroy();
@@ -221,12 +218,13 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     myPeer.on('open', (id) => {
       console.log('open');
       setConnected(true);
-      setMyId(id);
+      myId = id;
       const userData: UserDetail = {
         userId: id,
         quizId: quizId,
         username: username,
       };
+      setNavigatorToStream();
       socket.emit('join_room', userData);
     });
     myPeer.on('error', (err) => {
@@ -236,14 +234,10 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   }, []);
 
   useEffect(() => {
-    setNavigatorToStream();
-  }, [myId]);
-
-  useEffect(() => {
     return () => {
       destoryConnection();
     };
-  }, [socket]);
+  }, []);
 
   useEffect(() => {
     toggleVideoTrack();
