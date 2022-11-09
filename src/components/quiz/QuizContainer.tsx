@@ -1,58 +1,23 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import React from 'react';
 import { Spinner } from 'flowbite-react';
 import QuizFooter from './footer/QuizFooter';
 import QuestionWrapper from './QuestionWrapper';
-import { VideoDetail } from '../../services/socketConnection';
-import useAuthValue from '../../hooks/useAuthValue';
-import Connection, {
-  createSocketConnectionInstance,
-} from '../../services/socketConnection';
+import AnswerList from './answers/AnswerList';
+import useConnected from '../../hooks/useConnected';
+import useQuizInfo from '../../hooks/useQuizinfo';
 import CamGrid from './cam/CamGrid';
 
-const QuizContainer = () => {
-  const socketInstance = useRef<Connection | null>(null);
-  const [, setStreaming] = useState(false);
-  const [, setDisplayStream] = useState(false);
-  const [isConnected, setConnected] = useState<boolean>(false);
-  const [videoItems, setVideoItems] = useState(new Map<string, VideoDetail>());
-  const auth = useAuthValue();
-  const { quizId } = useParams();
+type QuizContainerProps = {
+  submitAnswer: (answer: string) => void;
+  destoryConnection: () => void;
+};
 
-  const startConnection = () => {
-    if (quizId) {
-      socketInstance.current = createSocketConnectionInstance({
-        updateInstance: updateFromInstance,
-        videoItems: videoItems,
-        quizId: quizId,
-        username: auth.username,
-      });
-    }
-  };
-
-  const updateFromInstance = (key: string, value: any) => {
-    if (key === 'streaming') setStreaming(value);
-    if (key === 'displayStream') setDisplayStream(value);
-    if (key === 'connection') setConnected(value);
-    if (key === 'videoItems') setVideoItems(value);
-  };
-
-  useEffect(() => {
-    return () => {
-      socketInstance.current?.destoryConnection();
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log(videoItems);
-    socketInstance.current?.setVideoItems(videoItems);
-  }, [videoItems]);
-
-  useEffect(() => {
-    if (auth.username) {
-      startConnection();
-    }
-  }, [auth]);
+const QuizContainer = ({
+  submitAnswer,
+  destoryConnection,
+}: QuizContainerProps) => {
+  const [isConnected] = useConnected();
+  const [quizInfo] = useQuizInfo();
 
   if (!isConnected) {
     return (
@@ -68,12 +33,16 @@ const QuizContainer = () => {
   return (
     <>
       <div className="h-screen">
-        <QuestionWrapper questionNum={1} content="Any plans for the weekend?" />
-        <CamGrid videoItems={videoItems} />
-        <button onClick={() => socketInstance?.current?.destoryConnection()}>
-          hi
-        </button>
-        <QuizFooter />
+        <QuestionWrapper
+          questionNum={quizInfo.current_question.questionNum}
+          content={quizInfo.current_question.content}
+        />
+        <AnswerList />
+        <CamGrid />
+        <QuizFooter
+          submitAnswer={submitAnswer}
+          destoryConnection={destoryConnection}
+        />
       </div>
     </>
   );

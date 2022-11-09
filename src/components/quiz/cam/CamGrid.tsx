@@ -1,18 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-// import RTCVideo from './RTCVideo';
-import { VideoDetail } from '../../../services/socketConnection';
 import RTCVideo from './RTCVideo';
+import useVideoItems from '../../../hooks/useVideoItems';
 
-type CamGridProps = {
-  videoItems: Map<string, VideoDetail>;
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const CamGrid = ({ videoItems }: CamGridProps) => {
+const CamGrid = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [cur, setCur] = useState<number>(0);
+  const [videoItems] = useVideoItems();
   const nextHandler = () => {
-    if (cur * 3 + 1 < videoItems.size) {
+    if (cur * 3 + 1 < Object.keys(videoItems).length) {
       setCur((prev) => prev + 1);
     }
   };
@@ -27,21 +22,11 @@ const CamGrid = ({ videoItems }: CamGridProps) => {
     }
   }, [cur]);
 
-  if (videoItems.size < 3) {
-    return (
-      <div className="flex h-44 w-full items-center justify-center">
-        {Array.from(videoItems).map(([, value], index) => (
-          <RTCVideo key={index} isGrow={false} mediaStream={value.stream} />
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div className="mx-auto flex h-44 w-7/12">
+    <div className="mx-auto mt-10 flex h-44 w-7/12">
       <button
         onClick={prevHandler}
-        className="z-10 m-0 h-full grow bg-slate-200 p-0 text-center text-black opacity-75 transition-all duration-300 ease-in-out hover:bg-blue-900/75 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-25"
+        className="z-10 m-0 h-full w-12 bg-slate-200 p-0 text-center text-black opacity-75 transition-all duration-300 ease-in-out hover:bg-blue-900/75 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-25"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -59,13 +44,13 @@ const CamGrid = ({ videoItems }: CamGridProps) => {
         </svg>
       </button>
       <div ref={ref} className="flex h-full grow overflow-hidden scroll-smooth">
-        {Array.from(videoItems).map(([, value], index) => (
-          <RTCVideo key={index} isGrow={true} mediaStream={value.stream} />
+        {Object.keys(videoItems).map((key, index) => (
+          <RTCVideo key={index} videoId={key} />
         ))}
       </div>
       <button
         onClick={nextHandler}
-        className="z-10 m-0 h-full grow bg-slate-200 p-0 text-center text-black opacity-75 transition-all duration-300 ease-in-out hover:bg-blue-900/75 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-25"
+        className="z-10 m-0 h-full w-12 bg-slate-200 p-0 text-center text-black opacity-75 transition-all duration-300 ease-in-out hover:bg-blue-900/75 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-25"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

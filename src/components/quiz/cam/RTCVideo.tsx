@@ -1,25 +1,33 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
+import { VideoItemsContext } from '../../../context/VideoItemsProvider';
 
 type RTCVideoProps = {
-  mediaStream: MediaStream;
-  isGrow: boolean;
+  videoId: string;
 };
 
-const RTCVideo = ({ mediaStream, isGrow }: RTCVideoProps) => {
+const RTCVideo = ({ videoId }: RTCVideoProps) => {
   const viewRef = useRef<HTMLVideoElement>(null);
+  const [videoItems] = useContext(VideoItemsContext);
 
   useEffect(() => {
     if (viewRef.current) {
-      viewRef.current.srcObject = mediaStream;
+      viewRef.current.srcObject = videoItems[videoId].stream;
     }
   }, []);
 
-  if (!isGrow) {
-    return <video className="h-full p-2" ref={viewRef} autoPlay />;
-  }
+  useEffect(() => {
+    if (viewRef.current) {
+      viewRef.current.srcObject = videoItems[videoId].stream;
+    }
+  }, [videoItems]);
 
   return (
-    <video className="h-full w-1/3 grow p-2" ref={viewRef} autoPlay></video>
+    <video
+      className="h-full w-1/3 bg-black p-2"
+      ref={viewRef}
+      autoPlay
+      muted={videoItems[videoId].userData === undefined}
+    />
   );
 };
 
