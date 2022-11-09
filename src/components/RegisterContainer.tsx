@@ -1,30 +1,32 @@
 import React, { useState, useRef } from 'react';
-import { basicLogin } from '../lib/api/auth';
+import { requestRegsiter } from '../lib/api/auth';
 import useAuthAction from '../hooks/useAuthAction';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 
-const LoginContainer = () => {
+const RegisterContainer = () => {
   const passwordRef = useRef<HTMLInputElement>(null);
-  const [invalid, setInvalid] = useState(false);
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [emailInvalid, setEmailInvalid] = useState(false);
+  const [passwordInvalid, setPasswordInvalid] = useState(false);
   const { signIn } = useAuthAction();
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  const loginHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const registerHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     passwordRef.current?.focus();
-    basicLogin(email, password)
+    requestRegsiter(email, username, password)
       .then(({ data }) => {
         const { email, username } = data;
         signIn({ email, username });
         navigate(state || '/');
       })
-      .catch(() => {
-        setInvalid(true);
-        setPassword('');
+      .catch((e) => {
+        const { email, password } = e.response.data.errors;
+        setEmailInvalid(email !== undefined);
+        setPasswordInvalid(password !== undefined);
       });
   };
 
@@ -32,14 +34,18 @@ const LoginContainer = () => {
     setEmail(e.target.value);
   };
 
+  const userNameChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value);
+  };
+
   const passWordChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
 
   return (
-    <div className="w-1/3 rounded-lg border-2 bg-slate-100 p-6">
-      <form onSubmit={loginHandler}>
-        <div className="mb-6">
+    <div className="max-h-92 min-w-[600px] rounded-lg border-2 bg-slate-100 p-6">
+      <form onSubmit={registerHandler}>
+        <div>
           <input
             type="text"
             className="form-control bg-classNameip-padding m-0 block w-full rounded border border-solid border-gray-300 bg-white px-4 py-2 text-xl font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
@@ -49,7 +55,22 @@ const LoginContainer = () => {
             placeholder="Email address"
           />
         </div>
-        <div>
+        {emailInvalid && (
+          <div className="text-sm font-bold text-rose-700">
+            Please check your email format
+          </div>
+        )}
+        <div className="mt-6">
+          <input
+            type="text"
+            className="form-control bg-classNameip-padding m-0 block w-full rounded border border-solid border-gray-300 bg-white px-4 py-2 text-xl font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
+            id="username"
+            value={username}
+            onChange={userNameChangeHandler}
+            placeholder="Username"
+          />
+        </div>
+        <div className="mt-6">
           <input
             type="password"
             className="form-control bg-classNameip-padding m-0 block w-full rounded border border-solid border-gray-300 bg-white px-4 py-2 text-xl font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
@@ -60,10 +81,10 @@ const LoginContainer = () => {
             placeholder="Password"
           />
         </div>
-
-        {invalid && (
-          <div className="mt-2 font-bold text-red-500">
-            Invalid email or password
+        {passwordInvalid && (
+          <div className="mt-2 text-sm font-bold text-rose-700">
+            your password should at lest one lower, upper, digit, special
+            character. <br />, and the length should be lower than 11
           </div>
         )}
 
@@ -72,21 +93,12 @@ const LoginContainer = () => {
             type="submit"
             className="inline-block rounded bg-blue-600 px-7 py-3 text-sm font-medium uppercase leading-snug text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg"
           >
-            Login
+            Register
           </button>
-          <p className="mt-2 mb-0 pt-1 text-sm font-semibold">
-            {"Don't have an account? "}
-            <Link
-              to="/register"
-              className="text-red-600 transition duration-200 ease-in-out hover:text-red-700 focus:text-red-700"
-            >
-              Register
-            </Link>
-          </p>
         </div>
       </form>
     </div>
   );
 };
 
-export default LoginContainer;
+export default RegisterContainer;

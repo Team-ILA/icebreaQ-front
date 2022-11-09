@@ -16,7 +16,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-const SelectMenuItem = ({ content }: SelectMenuItemProps) => {
+const SelectMenuItem = ({ id, content }: SelectMenuItemProps) => {
   return (
     <Listbox.Option
       className={({ active }) =>
@@ -25,7 +25,7 @@ const SelectMenuItem = ({ content }: SelectMenuItemProps) => {
           'relative cursor-default select-none py-2 pl-3 pr-9'
         )
       }
-      value={content}
+      value={{ id, content }}
     >
       {({ selected, active }) => (
         <>
@@ -90,8 +90,8 @@ const SelectMenus = ({ items, setCurItem }: SelectMenusProps) => {
               leaveTo="opacity-0"
             >
               <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {items.map((item) => (
-                  <SelectMenuItem {...item} key={item.id} />
+                {items.map((item, index) => (
+                  <SelectMenuItem {...item} key={index} />
                 ))}
               </Listbox.Options>
             </Transition>

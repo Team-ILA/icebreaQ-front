@@ -1,13 +1,56 @@
 import React from 'react';
+import { Spinner } from 'flowbite-react';
 import QuizFooter from './footer/QuizFooter';
 import QuestionWrapper from './QuestionWrapper';
+import AnswerList from './answers/AnswerList';
+import useConnected from '../../hooks/useConnected';
+import useQuizInfo from '../../hooks/useQuizinfo';
+import CamGrid from './cam/CamGrid';
 
-const QuizContainer = () => {
+type QuizContainerProps = {
+  submitAnswer: (answer: string) => void;
+  destoryConnection: () => void;
+  moveNext: () => void;
+  movePrev: () => void;
+};
+
+const QuizContainer = ({
+  submitAnswer,
+  destoryConnection,
+  moveNext,
+  movePrev,
+}: QuizContainerProps) => {
+  const [isConnected] = useConnected();
+  const [quizInfo] = useQuizInfo();
+
+  if (!isConnected) {
+    return (
+      <div className="grid min-h-screen place-items-center">
+        <div className="flex w-1/3 items-center justify-center gap-4">
+          <Spinner size="xl" />
+          <div className="text-4xl text-gray-800">loading...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="h-screen">
-      <QuestionWrapper questionNum={1} content="Any plans for the weekend?" />
-      <QuizFooter />
-    </div>
+    <>
+      <div className="h-screen">
+        <QuestionWrapper
+          moveNext={moveNext}
+          movePrev={movePrev}
+          questionNum={quizInfo.current_question.questionNum}
+          content={quizInfo.current_question.content}
+        />
+        <AnswerList />
+        <CamGrid />
+        <QuizFooter
+          submitAnswer={submitAnswer}
+          destoryConnection={destoryConnection}
+        />
+      </div>
+    </>
   );
 };
 

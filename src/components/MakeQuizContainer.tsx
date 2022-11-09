@@ -26,6 +26,7 @@ const MakeQuizContainer = () => {
   ]);
   const [title, setTitle] = useState<string>('');
   const [limit, setLimit] = useState<SelectMenuItemProps>(personnelOptions[0]);
+  const [invalid, setInValid] = useState(false);
 
   const addQuestionHandler = async () => {
     await push(initialQuestion);
@@ -42,6 +43,11 @@ const MakeQuizContainer = () => {
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!title || questions.map((e) => e.questionContent).includes('')) {
+      setInValid(true);
+      return;
+    }
+    setInValid(false);
     requestMakeQuiz(
       title,
       limit.id,
@@ -82,6 +88,7 @@ const MakeQuizContainer = () => {
             <QuestionCard
               question={question}
               index={index}
+              length={questions.length}
               key={index}
               updateAt={updateAt}
               removeAt={removeAt}
@@ -95,6 +102,11 @@ const MakeQuizContainer = () => {
           <HiOutlinePlusCircle size="28" />
           Add a question
         </div>
+        {invalid && (
+          <div className="font-bold text-rose-600">
+            Please fill all of fiedls
+          </div>
+        )}
         <DefaultButton className="h-10 w-full" content="Submit" />
       </form>
     </div>

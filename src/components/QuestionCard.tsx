@@ -8,6 +8,7 @@ export interface Question {
 type QuestionCardProps = {
   question: Question;
   index: number;
+  length: number;
   updateAt: (index: number, item: Question) => void;
   removeAt: (index: number) => void;
 };
@@ -15,6 +16,7 @@ type QuestionCardProps = {
 const QuestionCard = ({
   question,
   index,
+  length,
   updateAt,
   removeAt,
 }: QuestionCardProps) => {
@@ -27,10 +29,21 @@ const QuestionCard = ({
     <div className="w-full border-2 border-dashed bg-white p-3">
       <div className="mb-2 flex">
         <p className="font-bold text-gray-600">Question {index + 1}</p>
-        <div className="grow"></div>
-        <span className="hover:cursor-pointer hover:text-red-500">
-          <HiTrash onClick={() => removeAt(index)} size={25} />
-        </span>
+        {length > 1 ? (
+          <>
+            <div className="grow"></div>
+            <span className="hover:cursor-pointer hover:text-red-500">
+              <HiTrash onClick={() => removeAt(index)} size={25} />
+            </span>
+          </>
+        ) : (
+          <>
+            <div className="grow"></div>
+            <span className="hover:cursor-not-allowed">
+              <HiTrash size={25} />
+            </span>
+          </>
+        )}
       </div>
       <div>
         <p className="mb-1">What is the question?</p>

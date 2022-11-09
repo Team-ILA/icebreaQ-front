@@ -1,21 +1,27 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
+import useAuthValue from '../hooks/useAuthValue';
 import MainLayout from '../layouts/MainLayout';
-import QuizContainer from '../components/quiz/QuizContainer';
-import RouteGuard from '../components/RouteGuard';
+import QuizConnection from '../components/quiz/QuizConntection';
+// import RouteGuard from '../components/RouteGuard';
+import useConnected from '../hooks/useConnected';
 
 function Quiz() {
+  const auth = useAuthValue();
   const { quizId } = useParams();
-  useEffect(() => {
-    console.log(quizId);
-  }, []);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [connected] = useConnected();
+
+  if (!quizId) {
+    return null;
+  }
 
   return (
-    <RouteGuard>
-      <MainLayout hideNavBar>
-        <QuizContainer />
-      </MainLayout>
-    </RouteGuard>
+    // <RouteGuard>
+    <MainLayout hideNavBar>
+      <QuizConnection quizId={quizId} username={auth.username} />
+    </MainLayout>
+    // </RouteGuard>
   );
 }
 

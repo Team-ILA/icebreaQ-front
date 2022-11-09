@@ -10,14 +10,33 @@ const ServiceOverview = () => {
           <h1 className="animate-[fadein_1s_ease-in] font-bold">
             Quiz platform for ice breaking
           </h1>
-          <h2 className="animate-[fadein_1s_ease-in_forwards] font-light opacity-0 animation-delay-600">
-            details of service...
+          <h2 className="mb-2 animate-[fadein_1s_ease-in_forwards] text-2xl font-semibold italic text-slate-900 opacity-0 animation-delay-600">
+            Take some time to
+            <span className="relative">
+              <span
+                className="absolute -inset-1 block -skew-y-3"
+                aria-hidden="true"
+              ></span>
+              <span className="relative mx-2 font-bold text-green-700">
+                share your thoughts
+              </span>
+            </span>
+            and
+            <span className="relative">
+              <span
+                className="absolute -inset-1 block -skew-y-3"
+                aria-hidden="true"
+              ></span>
+              <span className="relative mx-2 font-bold text-green-700">
+                get close to each other
+              </span>
+            </span>
             <br />
-            details of service...
+            through a quiz consisting of various questions !
           </h2>
-          <Link to="/join">
+          <Link className="h-16 w-64" to="/join">
             <DefaultButton
-              className="h-16 w-64 text-4xl"
+              className="h-full w-full text-4xl"
               content="Get Started"
             />
           </Link>
