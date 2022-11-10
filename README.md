@@ -1,46 +1,73 @@
-# Getting Started with Create React App
+# icebreaQ-client
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the client implementation of icebreaQ. It is built with `React`, `socket.io`, `
 
-## Available Scripts
+## Environment
 
-In the project directory, you can run:
+- `react 18.2.0`
 
-### `npm start`
+## Get Started
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+We assume this project is installed on ubuntu 16.04 or macOS.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Before Download
 
-### `npm test`
+You should install node v14.20.1
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**WE RECOMMEND INSTALLING `node` VIA `nvm`**
 
-### `npm run build`
+1. [Install nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+2. `nvm install 14`
+3. `nvm use 14`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Download and Configuration
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. download the git repository and install dependencies
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+git clone https://github.com/Team-ILA/icebreaQ-front.git
+cd icebreaQ-front
+npm install
+```
 
-### `npm run eject`
+2. set configuration for the client
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+cat .env.example > .env
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**You should fill all the environment variables correctly in `.env` as described.**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Running the Program
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+npm start
+```
 
-## Learn More
+## Description
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Register
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+![Register Page](https://user-images.githubusercontent.com/80937237/201001351-c28634d4-fa4d-444c-a62a-350c2b07440e.png)
+You can resgiter as a user through this page.
+
+- Your email address format should be valid.
+- Your password should include at least one capital letter, one special character, and should be longer than 11 characters.
+
+### Login
+
+![Login Page](https://user-images.githubusercontent.com/80937237/201000899-13ca601d-04f5-403f-a60d-f47350f239b3.png)
+You can login through this page.  
+ **You have to login first if you want to use our service.**
+
+### Making quiz
+
+![Making quiz](https://user-images.githubusercontent.com/80937237/201002353-d2d79eb5-b905-469e-8e9d-41a5e1cff82c.png)
+
+You can create quiz through this page.
+
+### Answer Page
+
+![Answer Page](https://user-images.githubusercontent.com/80937237/201003649-bac3b659-3199-4e8a-97cc-acaac822f917.png)
+
+Users can communicate through chatting and video chat.
