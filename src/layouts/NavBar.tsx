@@ -25,9 +25,11 @@ const NavBar = () => {
                 Login
               </button>
             </Link>
-            <button className="font-violet-500 h-9 w-28 rounded-lg border-2 bg-white px-2 font-bold text-violet-900">
-              Register
-            </button>
+            <Link to="/register">
+              <button className="font-violet-500 h-9 w-28 rounded-lg border-2 bg-white px-2 font-bold text-violet-900">
+                Register
+              </button>
+            </Link>
           </>
         )}
       </div>
