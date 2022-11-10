@@ -84,7 +84,7 @@ const RegisterContainer = () => {
         {passwordInvalid && (
           <div className="mt-2 text-sm font-bold text-rose-700">
             Your password should be longer than 11 characters,
-            <br /> and contain at least one lower case, upper case, digit, special character.
+            <br /> and contain at least one lower case, upper case, digit, and special character.
           </div>
         )}
 
