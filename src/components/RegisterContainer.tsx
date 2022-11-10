@@ -9,6 +9,7 @@ const RegisterContainer = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [emailInvalid, setEmailInvalid] = useState(false);
+  const [emailExists, setEmailExists] = useState(false);
   const [passwordInvalid, setPasswordInvalid] = useState(false);
   const { signIn } = useAuthAction();
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const RegisterContainer = () => {
         navigate(state || '/');
       })
       .catch((e) => {
+        setEmailExists(e.response.status === 409);
         const { email, password } = e.response.data.errors;
         setEmailInvalid(email !== undefined);
         setPasswordInvalid(password !== undefined);
@@ -57,7 +59,12 @@ const RegisterContainer = () => {
         </div>
         {emailInvalid && (
           <div className="text-sm font-bold text-rose-700">
-            Please check your email format
+            Please check your email format.
+          </div>
+        )}
+        {emailExists && (
+          <div className="text-sm font-bold text-rose-700">
+            Your email is already being used.
           </div>
         )}
         <div className="mt-6">
@@ -84,7 +91,8 @@ const RegisterContainer = () => {
         {passwordInvalid && (
           <div className="mt-2 text-sm font-bold text-rose-700">
             Your password should be longer than 11 characters,
-            <br /> and contain at least one lower case, upper case, digit, and special character.
+            <br /> and contain at least one lower case, upper case, digit, and
+            special character.
           </div>
         )}
 
