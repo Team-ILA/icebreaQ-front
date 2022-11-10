@@ -1,6 +1,6 @@
 # icebreaQ-client
 
-This is the client implementation of icebreaQ. It is built with `React`, `socket.io`, `
+This is the client implementation of icebreaQ. It is built with `React`, `socket.io`, `peerjs`, `WebRTC`.
 
 ## Environment
 
