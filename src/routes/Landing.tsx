@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import ServiceOverview from '../components/ServiceOverview';
-import ServiceFeatures from '../components/ServiceFeatures';
 import MainLayout from '../layouts/MainLayout';
 
 function Landing() {
@@ -11,7 +10,6 @@ function Landing() {
     <MainLayout>
       <div className="pt-[58px]">
         <ServiceOverview />
-        <ServiceFeatures />
       </div>
     </MainLayout>
   );
