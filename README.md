@@ -3,7 +3,7 @@
 This is the client implementation of icebreaQ. It is built with `React`, `socket.io`, `peerjs`, `WebRTC`.
 
 ## Environment
-
+drwxr-xr-x  17 imhyeong-u  staff   544B 11 10 15:14 icebreaQ-front
 - `react 18.2.0`
 
 ## Get Started
@@ -22,7 +22,7 @@ You should install node v14.20.1
 
 ### Download and Configuration
 
-1. download the git repository and install dependencies
+1. download the git repo`sitory and install dependencies
 
 ```bash
 git clone https://github.com/Team-ILA/icebreaQ-front.git
@@ -49,7 +49,7 @@ npm start
 ### Register
 
 ![Register Page](https://user-images.githubusercontent.com/80937237/201001351-c28634d4-fa4d-444c-a62a-350c2b07440e.png)
-You can resgiter as a user through this page.
+You can register as a user through this page.
 
 - Your email address format should be valid.
 - Your password should include at least one capital letter, one special character, and should be longer than 11 characters.
@@ -58,16 +58,16 @@ You can resgiter as a user through this page.
 
 ![Login Page](https://user-images.githubusercontent.com/80937237/201000899-13ca601d-04f5-403f-a60d-f47350f239b3.png)
 You can login through this page.  
- **You have to login first if you want to use our service.**
+ **You need to be logged in to use enjoy all of the functionalities**
 
 ### Making quiz
 
-![Making quiz](https://user-images.githubusercontent.com/80937237/201002353-d2d79eb5-b905-469e-8e9d-41a5e1cff82c.png)
+![Making quiz](https://user-images.githubusercontent.com/24950961/201035960-6b7a45b2-1acb-432b-8c51-ff31695a0963.png)
 
 You can create quiz through this page.
 
 ### Answer Page
 
-![Answer Page](https://user-images.githubusercontent.com/80937237/201003649-bac3b659-3199-4e8a-97cc-acaac822f917.png)
+![Answer Page](https://user-images.githubusercontent.com/24950961/201033161-a1ad1218-fd1c-40c9-bf48-53859e073396.png)
 
 Users can communicate through chatting and video chat.
