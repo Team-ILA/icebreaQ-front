@@ -55,7 +55,7 @@ export default function usePeer(
 
         call.on('close', () => {
           setVideoItems((prev) => {
-            const newState = prev;
+            const newState = { ...prev };
             delete newState[call.metadata.id];
             return newState;
           });
@@ -63,7 +63,7 @@ export default function usePeer(
 
         call.on('error', () => {
           setVideoItems((prev) => {
-            const newState = prev;
+            const newState = { ...prev };
             delete newState[call.metadata.id];
             return newState;
           });

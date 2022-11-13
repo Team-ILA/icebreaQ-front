@@ -12,13 +12,6 @@ const RTCVideo = ({ videoId }: RTCVideoProps) => {
   useEffect(() => {
     if (viewRef.current) {
       viewRef.current.srcObject = videoItems[videoId].stream;
-      viewRef.current.volume = 0.01;
-    }
-  }, []);
-
-  useEffect(() => {
-    if (viewRef.current) {
-      viewRef.current.srcObject = videoItems[videoId].stream;
     }
   }, [videoItems]);
 

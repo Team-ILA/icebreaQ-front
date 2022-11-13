@@ -38,7 +38,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
 
   const removeVideo = (id: string) => {
     setVideoItems((prev) => {
-      const newState = prev;
+      const newState = { ...prev };
       delete newState[id];
       return newState;
     });
@@ -54,7 +54,7 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     };
     socket.emit('join_room', userData);
   };
-  const [, myPeerID] = usePeer(initPeer, setVideoItems);
+  const [myPeer, myPeerID] = usePeer(initPeer, setVideoItems);
 
   const setNavigatorToStream = (peer: Peer) => {
     getVideoAudioStream().then((stream) => {
@@ -81,7 +81,11 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     peer.on('call', (call) => {
       call.answer(stream);
       call.on('stream', (userVideoStream: MediaStream) => {
-        createVideo({ id: call.metadata.id, stream: userVideoStream });
+        createVideo({
+          id: call.metadata.id,
+          stream: userVideoStream,
+          userData: call.metadata.user,
+        });
       });
       call.on('close', () => {
         removeVideo(call.metadata.id);
@@ -108,10 +112,10 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   ) => {
     const { userId } = userData;
     const call = peer.call(userId, stream, {
-      metadata: { id: myPeerID },
+      metadata: { id: peer.id, user: userData },
     });
     call.on('stream', (userVideoStream) => {
-      createVideo({ id: userId, stream: userVideoStream, userData });
+      createVideo({ id: userId, stream: userVideoStream, userData: userData });
     });
     call.on('close', () => {
       removeVideo(userId);
@@ -127,53 +131,32 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
   const toggleVideoTrack = () => {
     const myVideo = getMyVideo();
     if (!myVideo) return;
-    if (!camStatus) {
-      myVideo.stream
-        .getVideoTracks()
-        .forEach((track: MediaStreamTrack) => track.stop());
-      setVideoItems((prev) => {
-        return { ...prev, [myPeerID]: myVideo };
-      });
-    } else {
-      reInitializeStream();
-    }
+    reInitializeStream();
   };
 
   const toggleAudioTrack = () => {
     const myVideo = getMyVideo();
     if (!myVideo) return;
-    if (!audioStatus) {
-      myVideo.stream
-        .getAudioTracks()
-        .forEach((track: MediaStreamTrack) => track.stop());
-    } else {
-      reInitializeStream();
-    }
+    reInitializeStream();
   };
 
   const reInitializeStream = () => {
-    return new Promise((resolve) => {
-      getVideoAudioStream().then((stream) => {
-        createVideo({ id: myPeerID, stream });
-        replaceStream(stream);
-        resolve(true);
-      });
+    getVideoAudioStream().then((stream) => {
+      createVideo({ id: myPeerID, stream });
+      replaceStream(stream);
     });
   };
 
   const replaceStream = (mediaStream: MediaStream) => {
+    if (!myPeer) return;
+    const userData: UserDetail = {
+      userId: myPeer.id,
+      quizId: quizId,
+      username: username,
+    };
     Object.keys(peers).forEach((key) => {
-      peers[key].peerConnection.getSenders().map((sender) => {
-        if (sender.track?.kind == 'audio') {
-          if (mediaStream.getAudioTracks().length > 0) {
-            sender.replaceTrack(mediaStream.getAudioTracks()[0]);
-          }
-        }
-        if (sender.track?.kind == 'video') {
-          if (mediaStream.getVideoTracks().length > 0) {
-            sender.replaceTrack(mediaStream.getVideoTracks()[0]);
-          }
-        }
+      myPeer?.call(key, mediaStream, {
+        metadata: { id: myPeer.id, user: userData },
       });
     });
   };
