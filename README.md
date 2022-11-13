@@ -2,8 +2,12 @@
 
 This is the client implementation of icebreaQ. It is built with `React`, `socket.io`, `peerjs`, `WebRTC`.
 
+[Demo Site](https://rwb0104.tk)
+
 ## Environment
-drwxr-xr-x  17 imhyeong-u  staff   544B 11 10 15:14 icebreaQ-front
+
+drwxr-xr-x 17 imhyeong-u staff 544B 11 10 15:14 icebreaQ-front
+
 - `react 18.2.0`
 
 ## Get Started
