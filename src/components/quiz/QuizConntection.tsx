@@ -159,7 +159,24 @@ const QuizConnection = ({ quizId, username }: QuizConnectionProps) => {
     const myVideo = getMyVideo();
     if (!myVideo) return;
     if (!camStatus && !audioStatus) {
-      myVideo.stream.getTracks().forEach((track) => track.stop());
+      myVideo.stream
+        .getAudioTracks()
+        .forEach((track) => (track.enabled = false));
+      myVideo.stream
+        .getVideoTracks()
+        .forEach((track) => (track.enabled = false));
+      if (myPeer) {
+        const userData: UserDetail = {
+          userId: myPeer.id,
+          quizId: quizId,
+          username: username,
+        };
+        Object.keys(peers).forEach((key) => {
+          myPeer?.call(key, myVideo.stream, {
+            metadata: { id: myPeer.id, user: userData },
+          });
+        });
+      }
       return;
     }
     reInitializeStream();

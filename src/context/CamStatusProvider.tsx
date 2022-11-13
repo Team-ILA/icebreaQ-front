@@ -7,7 +7,7 @@ export const CamStatusContext = createContext<CamStatusType>(
 );
 
 const CamStatusProvider = ({ children }: { children: React.ReactNode }) => {
-  const camStatusState = useState(true);
+  const camStatusState = useState(false);
 
   return (
     <CamStatusContext.Provider value={camStatusState}>
